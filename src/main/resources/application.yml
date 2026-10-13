@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: facilityflow
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/facilityflow}
+    username: ${SPRING_DATASOURCE_USERNAME:facilityflow}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  mvc:
+    problemdetails:
+      enabled: true
+server:
+  port: ${PORT:8080}
+  forward-headers-strategy: framework
+  servlet:
+    session:
+      timeout: 45m
+      cookie:
+        http-only: true
+        same-site: lax
+        secure: ${SESSION_COOKIE_SECURE:false}
+  error:
+    include-message: never
+    include-stacktrace: never
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+app:
+  demo-seed: ${APP_DEMO_SEED:false}
+  bootstrap-email: ${APP_BOOTSTRAP_EMAIL:}
+  bootstrap-password: ${APP_BOOTSTRAP_PASSWORD:}
+  bootstrap-name: ${APP_BOOTSTRAP_NAME:FacilityFlow Admin}
+  maintenance-cron: ${APP_MAINTENANCE_CRON:0 0 3 * * *}
+logging:
+  level:
+    org.springframework.security: WARN

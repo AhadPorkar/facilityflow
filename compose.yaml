@@ -1,0 +1,62 @@
+name: facilityflow
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: facilityflow
+      POSTGRES_USER: facilityflow
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U facilityflow -d facilityflow"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    networks: [internal]
+    security_opt: ["no-new-privileges:true"]
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${APP_PORT:-8080}:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/facilityflow
+      SPRING_DATASOURCE_USERNAME: facilityflow
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      APP_DEMO_SEED: ${APP_DEMO_SEED:-false}
+      APP_BOOTSTRAP_EMAIL: ${APP_BOOTSTRAP_EMAIL:-}
+      APP_BOOTSTRAP_PASSWORD: ${APP_BOOTSTRAP_PASSWORD:-}
+      APP_BOOTSTRAP_NAME: ${APP_BOOTSTRAP_NAME:-FacilityFlow Administrator}
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-false}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [internal]
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    security_opt: ["no-new-privileges:true"]
+  caddy:
+    image: caddy:2.10-alpine
+    profiles: [production]
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:-facilityflow.example.com}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [app]
+    networks: [internal]
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:
+networks:
+  internal:
+    driver: bridge

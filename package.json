@@ -1,0 +1,11 @@
+{
+  "name": "facilityflow-ui-tests",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Native JavaScript UI showcase, intentionally without npm runtime dependencies",
+  "scripts": {
+    "test:ui": "node --test frontend-tests/*.test.js",
+    "check:js": "node --check src/main/resources/static/js/app.js && node --check src/main/resources/static/js/api.js && node --check src/main/resources/static/js/preview-data.js && node --test frontend-tests/*.test.js"
+  }
+}

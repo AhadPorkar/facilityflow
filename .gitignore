@@ -1,0 +1,27 @@
+# Java, IDEs and containers
+/target/
+*.class
+.idea/
+.vscode/
+*.iml
+.project
+.classpath
+.settings/
+.gradle/
+
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+
+# Local runtime and test output
+coverage/
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+/src/main/resources/static/.vite/
